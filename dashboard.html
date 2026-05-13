@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Проекты — дашборд</title>
+  <script src="//api.bitrix24.com/api/v1/" async></script>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #2563eb;
+      --accent2: #10b981;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .title {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    main {
+      width: min(1320px, calc(100% - 24px));
+      margin: 14px auto 40px;
+      flex: 1;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 240px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .search input {
+      border: none;
+      outline: none;
+      font-size: 14px;
+      width: 100%;
+      background: transparent;
+    }
+
+    .chipbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+      user-select: none;
+    }
+
+    .chip:hover {
+      transform: translateY(-1px);
+      border-color: #d1d5db;
+      background: #f8fafc;
+    }
+
+    .chip.is-on {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(37, 99, 235, 0.06);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    thead th {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #fafbfc;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    tbody td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 14px;
+      line-height: 1.35;
+      word-wrap: break-word;
+      color: #0f172a;
+    }
+
+    tbody tr:hover {
+      background: rgba(37, 99, 235, 0.03);
+    }
+
+    .text-sm {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stage {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage .dot {
+      opacity: 0.9;
+    }
+
+    .stage[data-stage="C1:NEW"] .dot { background: var(--danger); }
+    .stage[data-stage="C1:PREP"] .dot { background: var(--warn); }
+    .stage[data-stage="C1:SOON"] .dot { background: var(--accent2); }
+
+    .progress {
+      font-feature-settings: "tnum" 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .footer {
+      padding: 10px 14px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: background 0.1s ease, transform 0.1s ease;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    button.btn:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+
+    .error {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      background: rgba(239, 68, 68, 0.06);
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      thead th:nth-child(5),
+      thead th:nth-child(6),
+      tbody td:nth-child(5),
+      tbody td:nth-child(6) {
+        display: none;
+      }
+
+      .search {
+        min-width: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 class="title">Проекты</h1>
+        <p class="sub">Лёгкий просмотр статусов и сроков</p>
+      </div>
+      <span class="pill" id="statusPill">
+        <span class="dot" id="statusDot"></span>
+        <span id="statusText">Загрузка…</span>
+      </span>
+    </header>
+
+    <main>
+      <div class="controls">
+        <div class="search">
+          <span style="opacity:0.65">🔎</span>
+          <input id="q" placeholder="Поиск: название, ответственный, телефон…" />
+        </div>
+
+        <div class="chipbar" id="filters">
+          <div class="chip is-on" data-stage="" title="Все стадии">Все</div>
+          <div class="chip" data-stage="C1:NEW">Срочно</div>
+          <div class="chip" data-stage="C1:PREP">Готовимся</div>
+          <div class="chip" data-stage="C1:SOON">Скоро</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 240px">Проект</th>
+              <th style="width: 170px">Стадия</th>
+              <th style="width: 140px">Срок</th>
+              <th style="width: 105px">Прогресс</th>
+              <th>Ответственный</th>
+              <th style="width: 170px">Телефон заказчика</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+
+        <div class="footer">
+          <span class="badge" id="totalBadge">0 проектов</span>
+          <div class="actions">
+            <button class="btn" id="refresh">Обновить</button>
+            <button class="btn" id="demo">Демо</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="error" id="error"></div>
+    </main>
+  </div>
+
+  <script>
+    const CONFIG = {
+      entityTypeId: 1068,
+      stageId: {
+        "C1:NEW": "Срочно",
+        "C1:PREP": "Готовимся",
+        "C1:SOON": "Скоро",
+      },
+      fields: {
+        deadline: "UF_CRM_20_1778699640", // Срок (Date)
+        progress: "UF_CRM_20_1778699785", // Прогресс % (Number)
+        comment: "UF_CRM_20_1778700051", // Комментарий
+        customerPhone: "UF_CRM_20_1778700103", // Контактное лицо заказчик
+        team: "UF_CRM_20_1778700254", // Команда проекта
+        owner: "UF_CRM_20_1778700584", // Ответственный за проект
+      },
+    };
+
+    const qs = {
+      statusDot: document.querySelector("#statusDot"),
+      statusText: document.querySelector("#statusText"),
+      totalBadge: document.querySelector("#totalBadge"),
+      rows: document.querySelector("#rows"),
+      error: document.querySelector("#error"),
+      q: document.querySelector("#q"),
+      filters: document.querySelector("#filters"),
+      refresh: document.querySelector("#refresh"),
+      demo: document.querySelector("#demo"),
+      chips: Array.from(document.querySelectorAll(".chip")),
+    };
+
+    let state = {
+      items: [],
+      filterStageId: "",
+      query: "",
+      mode: "auto", // auto|demo
+    };
+
+    function setStatus(kind, text) {
+      qs.statusText.textContent = text;
+      qs.statusDot.style.background = {
+        ok: "var(--accent2)",
+        warn: "var(--warn)",
+        err: "var(--danger)",
+        wait: "var(--muted)",
+      }[kind] || "var(--muted)";
+    }
+
+    function safeStr(v) {
+      if (v == null) return "";
+      const s = String(v).trim();
+      return s === "" ? "" : s;
+    }
+
+    function shortName(user) {
+      if (!user) return "";
+      // BX24.user: {id, name, lastName, secondName}
+      const parts = [safeStr(user.lastName), safeStr(user.name)].filter(Boolean);
+      return parts.length ? parts.join(" ") : safeStr(user.title || user.name || "");
+    }
+
+    function fmtDate(dateStr) {
+      const s = safeStr(dateStr);
+      if (!s) return "";
+      // Bitrix returns date like "2026-05-13" or ISO
+      const dt = new Date(s);
+      if (Number.isNaN(dt.getTime())) return s;
+      const dd = String(dt.getDate()).padStart(2, "0");
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      const yyyy = dt.getFullYear();
+      return `${dd}.${mm}.${yyyy}`;
+    }
+
+    function normalizeItem(it) {
+      const stId = safeStr(it.stageId);
+      return {
+        id: it.id,
+        title: safeStr(it.title) || `#${it.id}`,
+        stageId: stId,
+        stageTitle: CONFIG.stageId[stId] || safeStr(it.stageId),
+        deadline: fmtDate(it[CONFIG.fields.deadline]),
+        progress: safeStr(it[CONFIG.fields.progress]),
+        comment: safeStr(it[CONFIG.fields.comment]),
+        owner: shortName(it[CONFIG.fields.owner]) || safeStr(it[CONFIG.fields.ownerName] || it.assignedByName),
+        customerPhone: safeStr(it[CONFIG.fields.customerPhone]),
+        team: it[CONFIG.fields.team] || [],
+      };
+    }
+
+    function render() {
+      const q = state.query.toLowerCase();
+      const items = state.items.filter((it) => {
+        if (state.filterStageId && it.stageId !== state.filterStageId) return false;
+        if (!q) return true;
+        const hay = [it.title, it.stageTitle, it.deadline, it.progress, it.owner, it.customerPhone, (it.team || []).join(",")]
+          .join("\n")
+          .toLowerCase();
+        return hay.includes(q);
+      });
+
+      qs.rows.innerHTML = items
+        .map((it) => {
+          const p = it.progress ? `${it.progress}%` : "";
+          return `
+            <tr>
+              <td>
+                <div style="font-weight:700">${escapeHtml(it.title)}</div>
+                <div class="text-sm">#${it.id}</div>
+              </td>
+              <td>
+                <span class="stage" data-stage="${escapeHtml(it.stageId)}" title="${escapeHtml(it.stageId)}">
+                  <span class="dot"></span>
+                  <span>${escapeHtml(it.stageTitle || "")}</span>
+                </span>
+              </td>
+              <td>${escapeHtml(it.deadline)}</td>
+              <td class="progress">${escapeHtml(p)}</td>
+              <td>${escapeHtml(it.owner)}</td>
+              <td>${escapeHtml(it.customerPhone)}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      qs.totalBadge.textContent = `${items.length} проектов`; // intentionally simple
+      // For demo, set ok; for auto, status will change
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function loadBx24() {
+      setStatus("wait", "Готовим…");
+
+      // In bitrix (iframe) BX24 is injected by script. In preview it may be missing.
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      for (let i = 0; i < 40; i++) {
+        if (window.BX24 && window.BX24.init) break;
+        await wait(125);
+      }
+
+      if (!window.BX24 || !window.BX24.init) {
+        throw new Error("BX24 не доступен. Открой в Bitrix24 (локальное приложение) или включи демо.");
+      }
+
+      await new Promise((resolve) => window.BX24.init(resolve));
+    }
+
+    async function fetchProjectsFromBitrix() {
+      await loadBx24();
+
+      setStatus("wait", "Тянем проекты…");
+
+      // We call crm.item.list with fields we need.
+      // Note: stageId might differ from config; adjust config later.
+      const select = [
+        "id",
+        "title",
+        "stageId",
+        CONFIG.fields.deadline,
+        CONFIG.fields.progress,
+        CONFIG.fields.comment,
+        CONFIG.fields.customerPhone,
+        CONFIG.fields.team,
+        CONFIG.fields.owner,
+      ];
+
+      const batchSize = 50;
+      let start = 0;
+      const items = [];
+
+      while (true) {
+        const resp = await new Promise((resolve, reject) => {
+          window.BX24.callMethod(
+            "crm.item.list",
+            {
+              entityTypeId: CONFIG.entityTypeId,
+              select,
+              order: { dateCreate: "DESC" },
+              start,
+            },
+            (res) => {
+              if (res.error()) return reject(new Error(res.error_description() || res.error()));
+              resolve(res.data());
+            }
+          );
+        });
+
+        const arr = resp.items || resp;
+        items.push(...arr);
+
+        if (typeof resp.next !== "number" && resp.next === undefined) break;
+        if (resp.next == null) break;
+        start = resp.next;
+        if (start === false) break;
+      }
+
+      state.items = items.map(normalizeItem);
+      setStatus("ok", "OK");
+      render();
+    }
+
+    function demoFill() {
+      setStatus("warn", "Демо-режим");
+
+      // keep nice for TV
+      const today = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      const addDays = (d) => {
+        const dt = new Date(today);
+        dt.setDate(dt.getDate() + d);
+        return `${pad(dt.getDate())}.${pad(dt.getMonth() + 1)}.${dt.getFullYear()}`;
+      };
+
+      state.items = [
+        {
+          id: 1,
+          title: "Landing для кампании",
+          stageId: "C1:NEW",
+          stageTitle: CONFIG.stageId["C1:NEW"],
+          deadline: addDays(2),
+          progress: "30",
+          owner: "Петров П",
+          customerPhone: "+7 900 000-00-01",
+        },
+        {
+          id: 2,
+          title: "Редизайн кабинета",
+          stageId: "C1:PREP",
+          stageTitle: CONFIG.stageId["C1:PREP"],
+          deadline: addDays(5),
+          progress: "55",
+          owner: "Сидорова А",
+          customerPhone: "+7 900 000-00-02",
+        },
+        {
+          id: 3,
+          title: "Интеграция CRM",
+          stageId: "C1:SOON",
+          stageTitle: CONFIG.stageId["C1:SOON"],
+          deadline: addDays(9),
+          progress: "80",
+          owner: "Иванов И",
+          customerPhone: "+7 900 000-00-03",
+        },
+      ];
+
+      render();
+    }
+
+    function setFilterStage(stageId) {
+      state.filterStageId = stageId;
+      qs.chips.forEach((c) => c.classList.toggle("is-on", c.dataset.stage === stageId));
+      render();
+    }
+
+    // Init listeners
+    qs.filters.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      setFilterStage(chip.dataset.stage);
+    });
+
+    qs.q.addEventListener("input", () => {
+      state.query = qs.q.value || "";
+      render();
+    });
+
+    qs.refresh.addEventListener("click", () => {
+      state.mode = "auto";
+      fetchProjectsFromBitrix().catch((err) => {
+        qs.error.style.display = "block";
+        qs.error.textContent = err.message;
+        setStatus("err", "Ошибка");
+      });
+    });
+
+    qs.demo.addEventListener("click", () => {
+      state.mode = "demo";
+      demoFill();
+    });
+
+    // Try auto-load on start
+    (async () => {
+      // Sanity checks (tiny tests)
+      console.assert(CONFIG.entityTypeId && CONFIG.entityTypeId > 0, "CONFIG.entityTypeId must be set");
+      console.assert(CONFIG.fields.deadline && CONFIG.fields.progress, "deadline/progress fields must be set");
+
+      try {
+        await fetchProjectsFromBitrix();
+      } catch (err) {
+        setStatus("warn", "Демо-режим");
+        qs.error.style.display = "block";
+        qs.error.textContent = err.message;
+        demoFill();
+      }
+    })();
+  </script>
+</body>
+</html>
