@@ -1,652 +1,676 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Проекты — дашборд</title>
-  <script src="//api.bitrix24.com/api/v1/" async></script>
-  <style>
-    :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --accent: #2563eb;
-      --accent2: #10b981;
-      --danger: #ef4444;
-      --warn: #f59e0b;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проекты</title>
+<script src="//api.bitrix24.com/api/v1/"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-    * {
-      box-sizing: border-box;
-    }
+html, body {
+  width: 100%; height: 100%;
+  background: #0b0d12;
+  overflow: hidden;
+}
 
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: var(--bg);
-      color: var(--text);
-    }
+.tv {
+  width: 100vw;
+  height: 100vh;
+  background: #0b0d12;
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  overflow: hidden;
+  color: #fff;
+}
 
-    .wrap {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+.tbl-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #1e2230;
+  border-radius: 8px;
+}
 
-    header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.78);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
+.tbl-hdr {
+  display: grid;
+  grid-template-columns: 5px 54px 1.8fr 110px 120px 70px 54px 1fr 120px;
+  background: #0e1018;
+  padding: 5px 10px 5px 0;
+  border-bottom: 1px solid #1e2230;
+  flex-shrink: 0;
+}
+.tbl-hdr span {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #2a3048;
+  padding: 0 6px;
+}
+.tbl-hdr span.r { text-align: right; }
 
-    .title {
-      margin: 0;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      line-height: 1.2;
-    }
+.tbl-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
 
-    .sub {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+.row {
+  display: grid;
+  grid-template-columns: 5px 54px 1.8fr 110px 120px 70px 54px 1fr 120px;
+  flex: 1;
+  border-top: 1px solid #141720;
+  align-items: center;
+  min-height: 0;
+  transition: background 0.2s;
+}
+.row.editable { cursor: pointer; }
+.row.editable:hover { background: #14182280; }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fff;
-      font-size: 13px;
-      color: var(--muted);
-    }
+.row-stripe { height: 100%; }
+.s-fire  { background: #cc2222; animation: sp 2s ease-in-out infinite; }
+@keyframes sp { 0%,100%{background:#aa1a1a} 50%{background:#f03030} }
+.s-prod  { background: #8a5500; }
+.s-work  { background: #3d2fa8; }
+.s-agree { background: #0a5c48; }
+.s-new   { background: #0e4a88; }
+.s-done  { background: #145824; }
 
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--muted);
-    }
+.fire-row  { background: #0e0707; }
+.prod-row  { background: #0d0b04; }
+.work-row  { background: #080810; }
+.agree-row { background: #060e0b; }
+.new-row   { background: #07091280; }
+.done-row  { background: #060d0780; }
 
-    main {
-      width: min(1320px, calc(100% - 24px));
-      margin: 14px auto 40px;
-      flex: 1;
-    }
+.cell  { padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nc    { overflow: hidden; padding: 0 6px; }
+.r     { text-align: right; padding: 0 6px; }
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 0 0 12px;
-    }
+.c-id      { font-size: 11px; color: #2e3448; font-weight: 700; }
+.c-name    { font-size: 13px; font-weight: 700; color: #d0d5e5; display: flex; align-items: center; gap: 6px; }
+.c-pencil  { font-size: 11px; opacity: 0.6; }
+.c-who     { font-size: 11px; color: #606880; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-status  { font-size: 11px; font-weight: 700; white-space: nowrap; }
+.c-date    { font-size: 11px; font-weight: 600; }
+.c-pct     { font-size: 13px; font-weight: 900; }
+.c-comment { font-size: 10px; color: #4a5068; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-updated { font-size: 10px; color: #2e3448; text-align: right; white-space: nowrap; }
 
-    .search {
-      flex: 1;
-      min-width: 240px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-    }
+.d-hot  { color: #ff4444; }
+.d-warn { color: #f5a623; }
+.d-ok   { color: #3a4055; }
+.d-done { color: #4cca66; }
 
-    .search input {
-      border: none;
-      outline: none;
-      font-size: 14px;
-      width: 100%;
-      background: transparent;
-    }
+.loader {
+  position: absolute; inset: 0;
+  background: #0b0d12cc;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: #3a4055; font-weight: 600;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+.spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid #1e2230; border-top-color: #4da3ff;
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+  margin-right: 8px; vertical-align: -3px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    .chipbar {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+.empty-row {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #2e3448; font-weight: 600;
+}
 
-    .chip {
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fff;
-      font-size: 13px;
-      color: var(--muted);
-      cursor: pointer;
-      transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
-      user-select: none;
-    }
+/* ── ТВ-режим: крупнее ── */
+.tv.tv-mode .c-id      { font-size: 16px; }
+.tv.tv-mode .c-name    { font-size: 22px; }
+.tv.tv-mode .c-who     { font-size: 15px; }
+.tv.tv-mode .c-status  { font-size: 15px; }
+.tv.tv-mode .c-date    { font-size: 17px; }
+.tv.tv-mode .c-pct     { font-size: 22px; }
+.tv.tv-mode .c-comment { font-size: 13px; }
+.tv.tv-mode .tbl-hdr span { font-size: 13px; }
+.tv.tv-mode .tbl-hdr,
+.tv.tv-mode .row {
+  grid-template-columns: 6px 70px 2fr 160px 180px 100px 80px 1.4fr 160px;
+}
 
-    .chip:hover {
-      transform: translateY(-1px);
-      border-color: #d1d5db;
-      background: #f8fafc;
-    }
+/* ── Мобильный режим ── */
+@media (max-width: 768px) {
+  body, html { overflow: auto; }
+  .tv { padding: 6px; height: auto; min-height: 100vh; }
+  .tbl-hdr { display: none; }
+  .tbl-body { overflow: visible; }
+  .row {
+    grid-template-columns: 6px 1fr auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "stripe name pct"
+      "stripe who  date"
+      "stripe comm comm";
+    padding: 8px 6px;
+    gap: 2px 8px;
+    flex: 0 0 auto;
+    border-top: 1px solid #1e2230;
+  }
+  .row > .row-stripe { grid-area: stripe; width: 6px; }
+  .row > .c-id { display: none; }
+  .row > .nc { grid-area: name; }
+  .row > .c-who { grid-area: who; }
+  .row > .c-status { display: none; }
+  .row > .c-date { grid-area: date; }
+  .row > .c-pct { grid-area: pct; }
+  .row > .c-comment { grid-area: comm; white-space: normal; font-size: 11px; }
+  .row > .c-updated { display: none; }
+  .c-name { font-size: 15px; }
+  .c-pct { font-size: 16px; }
+}
 
-    .chip.is-on {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(37, 99, 235, 0.06);
-    }
+/* ── Модалка редактирования ── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: #11141c;
+  border: 1px solid #1e2230;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  color: #d0d5e5;
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+}
+.modal h3 {
+  font-size: 14px; font-weight: 700; margin-bottom: 16px;
+  color: #fff;
+}
+.modal label {
+  display: block; font-size: 11px; color: #606880;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin: 12px 0 4px;
+}
+.modal input, .modal select, .modal textarea {
+  width: 100%;
+  background: #0b0d12;
+  border: 1px solid #1e2230;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+}
+.modal textarea { resize: vertical; min-height: 60px; }
+.modal-actions {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 20px;
+}
+.modal button {
+  border: none;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-cancel { background: #1e2230; color: #909aae; }
+.btn-save   { background: #2d7eff; color: #fff; }
+.btn-save:disabled { opacity: 0.5; cursor: wait; }
 
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-
-    thead th {
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--muted);
-      text-align: left;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      background: #fafbfc;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
-    tbody td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-      font-size: 14px;
-      line-height: 1.35;
-      word-wrap: break-word;
-      color: #0f172a;
-    }
-
-    tbody tr:hover {
-      background: rgba(37, 99, 235, 0.03);
-    }
-
-    .text-sm {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .stage {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #fff;
-      white-space: nowrap;
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .stage .dot {
-      opacity: 0.9;
-    }
-
-    .stage[data-stage="C1:NEW"] .dot { background: var(--danger); }
-    .stage[data-stage="C1:PREP"] .dot { background: var(--warn); }
-    .stage[data-stage="C1:SOON"] .dot { background: var(--accent2); }
-
-    .progress {
-      font-feature-settings: "tnum" 1;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .footer {
-      padding: 10px 14px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      border-top: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.78);
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.92);
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .actions {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    button.btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--muted);
-      cursor: pointer;
-      padding: 8px 10px;
-      border-radius: 10px;
-      transition: background 0.1s ease, transform 0.1s ease;
-      font-size: 13px;
-      user-select: none;
-    }
-
-    button.btn:hover {
-      background: #f8fafc;
-      transform: translateY(-1px);
-    }
-
-    .error {
-      display: none;
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      background: rgba(239, 68, 68, 0.06);
-      color: var(--danger);
-      font-size: 14px;
-    }
-
-    @media (max-width: 900px) {
-      thead th:nth-child(5),
-      thead th:nth-child(6),
-      tbody td:nth-child(5),
-      tbody td:nth-child(6) {
-        display: none;
-      }
-
-      .search {
-        min-width: 180px;
-      }
-    }
-  </style>
+.pct-row { display: flex; align-items: center; gap: 8px; }
+.pct-row input[type=range] { flex: 1; }
+.pct-val { font-size: 14px; font-weight: 700; color: #fff; min-width: 42px; text-align: right; }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1 class="title">Проекты</h1>
-        <p class="sub">Лёгкий просмотр статусов и сроков</p>
-      </div>
-      <span class="pill" id="statusPill">
-        <span class="dot" id="statusDot"></span>
-        <span id="statusText">Загрузка…</span>
-      </span>
-    </header>
-
-    <main>
-      <div class="controls">
-        <div class="search">
-          <span style="opacity:0.65">🔎</span>
-          <input id="q" placeholder="Поиск: название, ответственный, телефон…" />
-        </div>
-
-        <div class="chipbar" id="filters">
-          <div class="chip is-on" data-stage="" title="Все стадии">Все</div>
-          <div class="chip" data-stage="C1:NEW">Срочно</div>
-          <div class="chip" data-stage="C1:PREP">Готовимся</div>
-          <div class="chip" data-stage="C1:SOON">Скоро</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 240px">Проект</th>
-              <th style="width: 170px">Стадия</th>
-              <th style="width: 140px">Срок</th>
-              <th style="width: 105px">Прогресс</th>
-              <th>Ответственный</th>
-              <th style="width: 170px">Телефон заказчика</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-
-        <div class="footer">
-          <span class="badge" id="totalBadge">0 проектов</span>
-          <div class="actions">
-            <button class="btn" id="refresh">Обновить</button>
-            <button class="btn" id="demo">Демо</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="error" id="error"></div>
-    </main>
+<div class="tv" id="tv-root">
+  <div class="tbl-wrap">
+    <div class="tbl-hdr">
+      <span></span>
+      <span>№</span>
+      <span>Проект</span>
+      <span>Кто</span>
+      <span>Статус</span>
+      <span class="r">Срок</span>
+      <span class="r">%</span>
+      <span>Комментарий</span>
+      <span class="r" id="clock-cell">—</span>
+    </div>
+    <div class="tbl-body" id="tbl-body">
+      <div class="loader"><span class="spinner"></span>Загрузка…</div>
+    </div>
   </div>
+</div>
 
-  <script>
-    const CONFIG = {
-      entityTypeId: 1068,
-      stageId: {
-        "C1:NEW": "Срочно",
-        "C1:PREP": "Готовимся",
-        "C1:SOON": "Скоро",
-      },
-      fields: {
-        deadline: "UF_CRM_20_1778699640", // Срок (Date)
-        progress: "UF_CRM_20_1778699785", // Прогресс % (Number)
-        comment: "UF_CRM_20_1778700051", // Комментарий
-        customerPhone: "UF_CRM_20_1778700103", // Контактное лицо заказчик
-        team: "UF_CRM_20_1778700254", // Команда проекта
-        owner: "UF_CRM_20_1778700584", // Ответственный за проект
-      },
-    };
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="modal-title">Проект</h3>
 
-    const qs = {
-      statusDot: document.querySelector("#statusDot"),
-      statusText: document.querySelector("#statusText"),
-      totalBadge: document.querySelector("#totalBadge"),
-      rows: document.querySelector("#rows"),
-      error: document.querySelector("#error"),
-      q: document.querySelector("#q"),
-      filters: document.querySelector("#filters"),
-      refresh: document.querySelector("#refresh"),
-      demo: document.querySelector("#demo"),
-      chips: Array.from(document.querySelectorAll(".chip")),
-    };
+    <label>Прогресс</label>
+    <div class="pct-row">
+      <input type="range" id="f-pct" min="0" max="100" step="5">
+      <span class="pct-val" id="f-pct-val">0%</span>
+    </div>
 
-    let state = {
-      items: [],
-      filterStageId: "",
-      query: "",
-      mode: "auto", // auto|demo
-    };
+    <label>Стадия</label>
+    <select id="f-stage"></select>
 
-    function setStatus(kind, text) {
-      qs.statusText.textContent = text;
-      qs.statusDot.style.background = {
-        ok: "var(--accent2)",
-        warn: "var(--warn)",
-        err: "var(--danger)",
-        wait: "var(--muted)",
-      }[kind] || "var(--muted)";
-    }
+    <label>Срок</label>
+    <input type="date" id="f-end">
 
-    function safeStr(v) {
-      if (v == null) return "";
-      const s = String(v).trim();
-      return s === "" ? "" : s;
-    }
+    <label>Комментарий</label>
+    <textarea id="f-comment" rows="3"></textarea>
 
-    function shortName(user) {
-      if (!user) return "";
-      // BX24.user: {id, name, lastName, secondName}
-      const parts = [safeStr(user.lastName), safeStr(user.name)].filter(Boolean);
-      return parts.length ? parts.join(" ") : safeStr(user.title || user.name || "");
-    }
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel">Отмена</button>
+      <button class="btn-save"   id="btn-save">Сохранить</button>
+    </div>
+  </div>
+</div>
 
-    function fmtDate(dateStr) {
-      const s = safeStr(dateStr);
-      if (!s) return "";
-      // Bitrix returns date like "2026-05-13" or ISO
-      const dt = new Date(s);
-      if (Number.isNaN(dt.getTime())) return s;
-      const dd = String(dt.getDate()).padStart(2, "0");
-      const mm = String(dt.getMonth() + 1).padStart(2, "0");
-      const yyyy = dt.getFullYear();
-      return `${dd}.${mm}.${yyyy}`;
-    }
+<script>
+/* ════════════════════════════════════════════════════════════════
+   КОНФИГ — заполни после создания смарт-процесса в Битриксе
+   (как — см. bitrix-setup.md)
+   ════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  ENTITY_TYPE_ID: 1068,
 
-    function normalizeItem(it) {
-      const stId = safeStr(it.stageId);
-      return {
-        id: it.id,
-        title: safeStr(it.title) || `#${it.id}`,
-        stageId: stId,
-        stageTitle: CONFIG.stageId[stId] || safeStr(it.stageId),
-        deadline: fmtDate(it[CONFIG.fields.deadline]),
-        progress: safeStr(it[CONFIG.fields.progress]),
-        comment: safeStr(it[CONFIG.fields.comment]),
-        owner: shortName(it[CONFIG.fields.owner]) || safeStr(it[CONFIG.fields.ownerName] || it.assignedByName),
-        customerPhone: safeStr(it[CONFIG.fields.customerPhone]),
-        team: it[CONFIG.fields.team] || [],
-      };
-    }
+  FIELDS: {
+    END:         'ufCrm20_1778699640',  // Срок
+    PROGRESS:    'ufCrm20_1778699785',  // Прогресс
+    COMMENT:     'ufCrm20_1778700051',  // Комментарий
+    TEAM:        'ufCrm20_1778700254',  // Команда проекта
+    RESPONSIBLE: 'ufCrm20_1778700584',  // Ответственный
+  },
 
-    function render() {
-      const q = state.query.toLowerCase();
-      const items = state.items.filter((it) => {
-        if (state.filterStageId && it.stageId !== state.filterStageId) return false;
-        if (!q) return true;
-        const hay = [it.title, it.stageTitle, it.deadline, it.progress, it.owner, it.customerPhone, (it.team || []).join(",")]
-          .join("\n")
-          .toLowerCase();
-        return hay.includes(q);
-      });
+  STAGES: [
+    { id: 'DT1068_26:NEW',         label: '🔥 Срочно',    stripe: 's-fire',  row: 'fire-row',  color: '#ff4444' },
+    { id: 'DT1068_26:PREPARATION', label: '⚙️ Готовимся', stripe: 's-prod',  row: 'prod-row',  color: '#f5a623' },
+    { id: 'DT1068_26:CLIENT',      label: '⭐ Скоро',     stripe: 's-new',   row: 'new-row',   color: '#4da3ff' },
+    { id: 'DT1068_26:SUCCESS',     label: '✅ Успех',     stripe: 's-done',  row: 'done-row',  color: '#4cca66', terminal: true },
+    { id: 'DT1068_26:FAIL',        label: '❌ Провал',     stripe: 's-done',  row: 'done-row',  color: '#909aae', terminal: true },
+  ],
 
-      qs.rows.innerHTML = items
-        .map((it) => {
-          const p = it.progress ? `${it.progress}%` : "";
-          return `
-            <tr>
-              <td>
-                <div style="font-weight:700">${escapeHtml(it.title)}</div>
-                <div class="text-sm">#${it.id}</div>
-              </td>
-              <td>
-                <span class="stage" data-stage="${escapeHtml(it.stageId)}" title="${escapeHtml(it.stageId)}">
-                  <span class="dot"></span>
-                  <span>${escapeHtml(it.stageTitle || "")}</span>
-                </span>
-              </td>
-              <td>${escapeHtml(it.deadline)}</td>
-              <td class="progress">${escapeHtml(p)}</td>
-              <td>${escapeHtml(it.owner)}</td>
-              <td>${escapeHtml(it.customerPhone)}</td>
-            </tr>
-          `;
-        })
-        .join("");
+  REFRESH_MS: 60 * 1000,
+};
+/* ════════════════════════════════════════════════════════════════ */
 
-      qs.totalBadge.textContent = `${items.length} проектов`; // intentionally simple
-      // For demo, set ok; for auto, status will change
-    }
+const STAGE_META = Object.fromEntries(CONFIG.STAGES.map(s => [s.id, s]));
+const STAGE_ORDER = CONFIG.STAGES.map(s => s.id);
+const TERMINAL_STAGES = new Set(CONFIG.STAGES.filter(s => s.terminal).map(s => s.id));
+const isTerminal = (stageId) => TERMINAL_STAGES.has(stageId);
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+const MONTHS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
 
-    async function loadBx24() {
-      setStatus("wait", "Готовим…");
+let users = {};
+let currentUserId = null;
+let isTV = false;
+let lastItems = [];
+let itemsById = {};
 
-      // In bitrix (iframe) BX24 is injected by script. In preview it may be missing.
-      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      for (let i = 0; i < 40; i++) {
-        if (window.BX24 && window.BX24.init) break;
-        await wait(125);
-      }
+/* ── Bitrix API: режим webhook или BX24 ── */
+const WEBHOOK_URL = (() => {
+  const p = new URL(location.href).searchParams.get('webhook');
+  const raw = p || '';
+  if (!raw) return null;
+  return raw.endsWith('/') ? raw : raw + '/';
+})();
+const USE_WEBHOOK = !!WEBHOOK_URL;
 
-      if (!window.BX24 || !window.BX24.init) {
-        throw new Error("BX24 не доступен. Открой в Bitrix24 (локальное приложение) или включи демо.");
-      }
+function bx(method, params = {}) {
+  return USE_WEBHOOK ? bxWebhook(method, params) : bxBX24(method, params);
+}
 
-      await new Promise((resolve) => window.BX24.init(resolve));
-    }
-
-    async function fetchProjectsFromBitrix() {
-      await loadBx24();
-
-      setStatus("wait", "Тянем проекты…");
-
-      // We call crm.item.list with fields we need.
-      // Note: stageId might differ from config; adjust config later.
-      const select = [
-        "id",
-        "title",
-        "stageId",
-        CONFIG.fields.deadline,
-        CONFIG.fields.progress,
-        CONFIG.fields.comment,
-        CONFIG.fields.customerPhone,
-        CONFIG.fields.team,
-        CONFIG.fields.owner,
-      ];
-
-      const batchSize = 50;
-      let start = 0;
-      const items = [];
-
-      while (true) {
-        const resp = await new Promise((resolve, reject) => {
-          window.BX24.callMethod(
-            "crm.item.list",
-            {
-              entityTypeId: CONFIG.entityTypeId,
-              select,
-              order: { dateCreate: "DESC" },
-              start,
-            },
-            (res) => {
-              if (res.error()) return reject(new Error(res.error_description() || res.error()));
-              resolve(res.data());
-            }
-          );
-        });
-
-        const arr = resp.items || resp;
-        items.push(...arr);
-
-        if (typeof resp.next !== "number" && resp.next === undefined) break;
-        if (resp.next == null) break;
-        start = resp.next;
-        if (start === false) break;
-      }
-
-      state.items = items.map(normalizeItem);
-      setStatus("ok", "OK");
-      render();
-    }
-
-    function demoFill() {
-      setStatus("warn", "Демо-режим");
-
-      // keep nice for TV
-      const today = new Date();
-      const pad = (n) => String(n).padStart(2, "0");
-      const addDays = (d) => {
-        const dt = new Date(today);
-        dt.setDate(dt.getDate() + d);
-        return `${pad(dt.getDate())}.${pad(dt.getMonth() + 1)}.${dt.getFullYear()}`;
-      };
-
-      state.items = [
-        {
-          id: 1,
-          title: "Landing для кампании",
-          stageId: "C1:NEW",
-          stageTitle: CONFIG.stageId["C1:NEW"],
-          deadline: addDays(2),
-          progress: "30",
-          owner: "Петров П",
-          customerPhone: "+7 900 000-00-01",
-        },
-        {
-          id: 2,
-          title: "Редизайн кабинета",
-          stageId: "C1:PREP",
-          stageTitle: CONFIG.stageId["C1:PREP"],
-          deadline: addDays(5),
-          progress: "55",
-          owner: "Сидорова А",
-          customerPhone: "+7 900 000-00-02",
-        },
-        {
-          id: 3,
-          title: "Интеграция CRM",
-          stageId: "C1:SOON",
-          stageTitle: CONFIG.stageId["C1:SOON"],
-          deadline: addDays(9),
-          progress: "80",
-          owner: "Иванов И",
-          customerPhone: "+7 900 000-00-03",
-        },
-      ];
-
-      render();
-    }
-
-    function setFilterStage(stageId) {
-      state.filterStageId = stageId;
-      qs.chips.forEach((c) => c.classList.toggle("is-on", c.dataset.stage === stageId));
-      render();
-    }
-
-    // Init listeners
-    qs.filters.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      setFilterStage(chip.dataset.stage);
+function bxBX24(method, params) {
+  return new Promise((resolve, reject) => {
+    BX24.callMethod(method, params, (r) => {
+      const err = r.error();
+      if (err) reject(new Error(err.ex && err.ex.error_description || String(err)));
+      else resolve({ data: r.data(), next: r.more() ? r.next : null, total: r.total() });
     });
+  });
+}
 
-    qs.q.addEventListener("input", () => {
-      state.query = qs.q.value || "";
-      render();
+function bxWebhook(method, params) {
+  const body = new URLSearchParams();
+  const enc = (k, v) => {
+    if (v == null) return;
+    if (Array.isArray(v)) v.forEach((x, i) => enc(`${k}[${i}]`, x));
+    else if (typeof v === 'object') Object.entries(v).forEach(([kk, vv]) => enc(`${k}[${kk}]`, vv));
+    else body.append(k, v);
+  };
+  Object.entries(params).forEach(([k, v]) => enc(k, v));
+  return fetch(WEBHOOK_URL + method + '.json', { method: 'POST', body })
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) throw new Error(d.error_description || d.error);
+      return { data: d.result, next: d.next, total: d.total };
     });
+}
 
-    qs.refresh.addEventListener("click", () => {
-      state.mode = "auto";
-      fetchProjectsFromBitrix().catch((err) => {
-        qs.error.style.display = "block";
-        qs.error.textContent = err.message;
-        setStatus("err", "Ошибка");
-      });
+async function fetchAllItems() {
+  let all = [], start = 0;
+  for (let i = 0; i < 30; i++) {
+    const r = await bx('crm.item.list', {
+      entityTypeId: CONFIG.ENTITY_TYPE_ID,
+      select: ['id','title','stageId','assignedById',
+               CONFIG.FIELDS.END, CONFIG.FIELDS.PROGRESS,
+               CONFIG.FIELDS.COMMENT, CONFIG.FIELDS.TEAM,
+               CONFIG.FIELDS.RESPONSIBLE],
+      start,
     });
+    const items = (r.data && r.data.items) || [];
+    all = all.concat(items);
+    if (items.length < 50) break;
+    start += items.length;
+  }
+  return all;
+}
 
-    qs.demo.addEventListener("click", () => {
-      state.mode = "demo";
-      demoFill();
+async function fetchUsers(ids) {
+  if (!ids.length) return;
+  for (let i = 0; i < ids.length; i += 50) {
+    const r = await bx('user.get', { ID: ids.slice(i, i+50) });
+    (r.data || []).forEach(u => { users[String(u.ID)] = u; });
+  }
+}
+
+async function fetchCurrentUser() {
+  const r = await bx('user.current', {});
+  currentUserId = r.data ? String(r.data.ID) : null;
+}
+
+/* ── helpers ── */
+function userName(id) {
+  if (!id) return '—';
+  const u = users[String(id)];
+  if (!u) return '—';
+  const first = (u.NAME || '').trim();
+  const last  = (u.LAST_NAME || '').trim();
+  return first ? first + (last ? ' ' + last[0] + '.' : '') : last || '—';
+}
+
+function teamIds(item) {
+  const raw = item[CONFIG.FIELDS.TEAM];
+  let ids = [];
+  if (Array.isArray(raw)) ids = raw.map(String).filter(Boolean);
+  else if (raw)            ids = [String(raw)];
+  const resp = item[CONFIG.FIELDS.RESPONSIBLE];
+  if (resp) ids.push(String(resp));
+  if (item.assignedById) ids.push(String(item.assignedById));
+  return [...new Set(ids)].filter(Boolean);
+}
+
+function teamLabel(item) {
+  return teamIds(item).slice(0,2).map(userName).filter(n => n !== '—').join(', ') || '—';
+}
+
+function canEdit(item) {
+  if (isTV || !currentUserId) return false;
+  return teamIds(item).includes(currentUserId);
+}
+
+function progress(item) {
+  const v = item[CONFIG.FIELDS.PROGRESS];
+  if (v !== null && v !== undefined && v !== '') return Math.max(0, Math.min(100, Math.round(Number(v))));
+  return 0;
+}
+
+function commentOf(item) {
+  return (item[CONFIG.FIELDS.COMMENT] || '').replace(/\[\/?[a-zA-Z0-9= "']*\]/g,'').trim();
+}
+
+function formatDate(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  if (isNaN(d)) return null;
+  return d.getDate().toString().padStart(2,'0') + ' ' + MONTHS[d.getMonth()];
+}
+
+function dateClass(s, stageId) {
+  if (!s || isTerminal(stageId)) return 'd-done';
+  const diff = (new Date(s) - Date.now()) / 86400000;
+  if (diff < 0)   return 'd-hot';
+  if (diff < 1.5) return 'd-hot';
+  if (diff < 5)   return 'd-warn';
+  return 'd-ok';
+}
+
+function dateLabel(s, stageId) {
+  if (isTerminal(stageId)) return 'готово';
+  if (!s) return '—';
+  const diff = (new Date(s) - Date.now()) / 86400000;
+  if (diff >= 0 && diff < 0.9) return 'сегодня';
+  if (diff >= 0.9 && diff < 1.9) return 'завтра';
+  return formatDate(s) || '—';
+}
+
+function pctColor(pct, stageId) {
+  const m = STAGE_META[stageId];
+  if (!m) return '#5a6070';
+  if (isTerminal(stageId)) return m.color;
+  if (pct === 0) return '#3a4055';
+  return m.color;
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function sortItems(items) {
+  return items.slice().sort((a, b) => {
+    const oa = STAGE_ORDER.indexOf(a.stageId);
+    const ob = STAGE_ORDER.indexOf(b.stageId);
+    if (oa !== ob) return (oa < 0 ? 99 : oa) - (ob < 0 ? 99 : ob);
+    const ea = a[CONFIG.FIELDS.END] ? new Date(a[CONFIG.FIELDS.END]).getTime() : Infinity;
+    const eb = b[CONFIG.FIELDS.END] ? new Date(b[CONFIG.FIELDS.END]).getTime() : Infinity;
+    return ea - eb;
+  });
+}
+
+/* ── рендер ── */
+function renderItems(items) {
+  const body = document.getElementById('tbl-body');
+  itemsById = {};
+  if (!items.length) {
+    body.innerHTML = '<div class="empty-row">Нет проектов</div>';
+    return;
+  }
+
+  const sorted = sortItems(items);
+
+  body.innerHTML = sorted.map(item => {
+    itemsById[item.id] = item;
+    const meta    = STAGE_META[item.stageId] || { label: item.stageId, stripe: 's-new', row: 'new-row', color: '#5a6070' };
+    const pct     = progress(item);
+    const endRaw  = item[CONFIG.FIELDS.END];
+    const dLabel  = dateLabel(endRaw, item.stageId);
+    const dClass  = dateClass(endRaw, item.stageId);
+    const note    = esc(commentOf(item));
+    const who     = esc(teamLabel(item));
+    const name    = esc(item.title || 'Без названия');
+    const pc      = pctColor(pct, item.stageId);
+    const editable = canEdit(item);
+    const pencil  = editable ? '<span class="c-pencil">✎</span>' : '';
+
+    return `<div class="row ${meta.row} ${editable ? 'editable' : ''}" data-id="${item.id}">
+      <div class="row-stripe ${meta.stripe}"></div>
+      <div class="cell c-id">${item.id}</div>
+      <div class="nc"><div class="c-name">${name}${pencil}</div></div>
+      <div class="cell c-who">${who}</div>
+      <div class="cell c-status" style="color:${meta.color}">${esc(meta.label)}</div>
+      <div class="r c-date ${dClass}">${dLabel}</div>
+      <div class="r c-pct" style="color:${pc}">${pct}%</div>
+      <div class="cell c-comment">${note}</div>
+      <div class="cell c-updated"></div>
+    </div>`;
+  }).join('');
+
+  body.querySelectorAll('.row.editable').forEach(row => {
+    row.addEventListener('click', () => openEditModal(row.dataset.id));
+  });
+}
+
+/* ── часы ── */
+function tick() {
+  const n = new Date();
+  const t = [n.getHours(), n.getMinutes(), n.getSeconds()].map(x => String(x).padStart(2,'0')).join(':');
+  const el = document.getElementById('clock-cell');
+  if (el) el.textContent = 'обновлено ' + t;
+}
+
+/* ── модалка ── */
+const modal = document.getElementById('modal-backdrop');
+const fPct      = document.getElementById('f-pct');
+const fPctVal   = document.getElementById('f-pct-val');
+const fStage    = document.getElementById('f-stage');
+const fEnd      = document.getElementById('f-end');
+const fComment  = document.getElementById('f-comment');
+const btnSave   = document.getElementById('btn-save');
+const btnCancel = document.getElementById('btn-cancel');
+const modalTitle= document.getElementById('modal-title');
+let editingId = null;
+
+fStage.innerHTML = CONFIG.STAGES.map(s =>
+  `<option value="${s.id}">${esc(s.label)}</option>`
+).join('');
+
+fPct.addEventListener('input', () => { fPctVal.textContent = fPct.value + '%'; });
+btnCancel.addEventListener('click', closeModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+function openEditModal(id) {
+  const item = itemsById[id];
+  if (!item) return;
+  editingId = id;
+  modalTitle.textContent = item.title || 'Проект';
+  fPct.value = progress(item);
+  fPctVal.textContent = fPct.value + '%';
+  fStage.value = item.stageId;
+  const end = item[CONFIG.FIELDS.END];
+  fEnd.value = end ? new Date(end).toISOString().slice(0,10) : '';
+  fComment.value = commentOf(item);
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  modal.classList.remove('open');
+  editingId = null;
+}
+
+btnSave.addEventListener('click', async () => {
+  if (!editingId) return;
+  btnSave.disabled = true;
+  btnSave.textContent = 'Сохраняю…';
+  const fields = {
+    stageId: fStage.value,
+    [CONFIG.FIELDS.PROGRESS]: Number(fPct.value),
+    [CONFIG.FIELDS.COMMENT]: fComment.value,
+    [CONFIG.FIELDS.END]: fEnd.value || null,
+  };
+  try {
+    await bx('crm.item.update', {
+      entityTypeId: CONFIG.ENTITY_TYPE_ID,
+      id: editingId,
+      fields,
     });
+    closeModal();
+    await load();
+  } catch (e) {
+    alert('Ошибка сохранения: ' + e.message);
+  } finally {
+    btnSave.disabled = false;
+    btnSave.textContent = 'Сохранить';
+  }
+});
 
-    // Try auto-load on start
-    (async () => {
-      // Sanity checks (tiny tests)
-      console.assert(CONFIG.entityTypeId && CONFIG.entityTypeId > 0, "CONFIG.entityTypeId must be set");
-      console.assert(CONFIG.fields.deadline && CONFIG.fields.progress, "deadline/progress fields must be set");
+/* ── главный цикл ── */
+async function load() {
+  try {
+    const items = await fetchAllItems();
+    const userIds = [...new Set(items.flatMap(teamIds))];
+    await fetchUsers(userIds);
+    lastItems = items;
+    renderItems(items);
+  } catch (e) {
+    console.error('Bitrix error:', e);
+    if (!lastItems.length) {
+      document.getElementById('tbl-body').innerHTML =
+        '<div class="empty-row">Ошибка загрузки: ' + esc(e.message) + '</div>';
+    }
+  }
+}
 
-      try {
-        await fetchProjectsFromBitrix();
-      } catch (err) {
-        setStatus("warn", "Демо-режим");
-        qs.error.style.display = "block";
-        qs.error.textContent = err.message;
-        demoFill();
-      }
-    })();
-  </script>
+/* ── старт ── */
+function detectMode() {
+  const url = new URL(location.href);
+  const m = url.searchParams.get('mode');
+  if (m === 'tv') return true;
+  if (m === 'mobile') return false;
+  return window.innerWidth >= 1280;
+}
+
+function configReady() {
+  return CONFIG.ENTITY_TYPE_ID > 0;
+}
+
+function showSetupHint() {
+  document.getElementById('tbl-body').innerHTML =
+    '<div class="empty-row">Не заполнен CONFIG в dashboard.html — см. bitrix-setup.md</div>';
+}
+
+async function start() {
+  if (!configReady()) { showSetupHint(); return; }
+  isTV = detectMode();
+  if (isTV) document.getElementById('tv-root').classList.add('tv-mode');
+  if (USE_WEBHOOK) showWebhookBanner();
+  try { await fetchCurrentUser(); } catch (e) { /* TV-аккаунт всё равно работает */ }
+  tick();
+  setInterval(tick, 1000);
+  await load();
+  setInterval(load, CONFIG.REFRESH_MS);
+}
+
+function showWebhookBanner() {
+  const b = document.createElement('div');
+  b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#8a5500;color:#fff;font-size:11px;padding:4px 10px;text-align:center;z-index:200;font-family:-apple-system,sans-serif;';
+  b.textContent = '⚠ Демо-режим: webhook. Для прода — открой через локальное приложение в Битриксе.';
+  document.body.appendChild(b);
+}
+
+function showNotInBitrix() {
+  document.getElementById('tbl-body').innerHTML =
+    '<div class="empty-row" style="text-align:center;line-height:1.7;padding:20px;max-width:600px;margin:auto;">' +
+    'Эту страницу нужно открывать <b>внутри Битрикс24</b> как локальное приложение.<br><br>' +
+    'Для быстрой проверки добавь к URL параметр:<br>' +
+    '<code style="color:#f5a623;font-size:11px;">?webhook=https://amiled.bitrix24.ru/rest/46/КЛЮЧ/</code>' +
+    '</div>';
+}
+
+if (USE_WEBHOOK) {
+  start();
+} else if (typeof BX24 !== 'undefined') {
+  let bxStarted = false;
+  BX24.init(() => { bxStarted = true; start(); });
+  setTimeout(() => { if (!bxStarted) showNotInBitrix(); }, 3000);
+} else {
+  showNotInBitrix();
+}
+</script>
 </body>
 </html>
