@@ -10,20 +10,20 @@
 
 html, body {
   width: 100%; height: 100%;
-  background: #0b0d12;
+  background: #f5f6f8;
   overflow: hidden;
 }
 
 .tv {
   width: 100vw;
   height: 100vh;
-  background: #0b0d12;
+  background: #f5f6f8;
   font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
   display: flex;
   flex-direction: column;
   padding: 8px 10px;
   overflow: hidden;
-  color: #fff;
+  color: #111827;
 }
 
 .tbl-wrap {
@@ -31,16 +31,17 @@ html, body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid #1e2230;
+  border: 1px solid #e5e7eb;
   border-radius: 8px;
+  background: #ffffff;
 }
 
 .tbl-hdr {
   display: grid;
   grid-template-columns: 5px 54px 1.8fr 110px 120px 70px 54px 1fr 120px;
-  background: #0e1018;
+  background: #f9fafb;
   padding: 5px 10px 5px 0;
-  border-bottom: 1px solid #1e2230;
+  border-bottom: 1px solid #e5e7eb;
   flex-shrink: 0;
 }
 .tbl-hdr span {
@@ -48,7 +49,7 @@ html, body {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #2a3048;
+  color: #6b7280;
   padding: 0 6px;
 }
 .tbl-hdr span.r { text-align: right; }
@@ -65,60 +66,60 @@ html, body {
   display: grid;
   grid-template-columns: 5px 54px 1.8fr 110px 120px 70px 54px 1fr 120px;
   flex: 1;
-  border-top: 1px solid #141720;
+  border-top: 1px solid #f0f1f4;
   align-items: center;
   min-height: 0;
   transition: background 0.2s;
 }
 .row.editable { cursor: pointer; }
-.row.editable:hover { background: #14182280; }
+.row.editable:hover { background: #f3f4f6; }
 
 .row-stripe { height: 100%; }
-.s-fire  { background: #cc2222; animation: sp 2s ease-in-out infinite; }
-@keyframes sp { 0%,100%{background:#aa1a1a} 50%{background:#f03030} }
-.s-prod  { background: #8a5500; }
-.s-work  { background: #3d2fa8; }
-.s-agree { background: #0a5c48; }
-.s-new   { background: #0e4a88; }
-.s-done  { background: #145824; }
+.s-fire  { background: #ef4444; animation: sp 2s ease-in-out infinite; }
+@keyframes sp { 0%,100%{background:#dc2626} 50%{background:#f87171} }
+.s-prod  { background: #f59e0b; }
+.s-work  { background: #8b5cf6; }
+.s-agree { background: #10b981; }
+.s-new   { background: #3b82f6; }
+.s-done  { background: #22c55e; }
 
-.fire-row  { background: #0e0707; }
-.prod-row  { background: #0d0b04; }
-.work-row  { background: #080810; }
-.agree-row { background: #060e0b; }
-.new-row   { background: #07091280; }
-.done-row  { background: #060d0780; }
+.fire-row  { background: #fef2f2; }
+.prod-row  { background: #fffbeb; }
+.work-row  { background: #f5f3ff; }
+.agree-row { background: #ecfdf5; }
+.new-row   { background: #eff6ff; }
+.done-row  { background: #f0fdf4; }
 
 .cell  { padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nc    { overflow: hidden; padding: 0 6px; }
 .r     { text-align: right; padding: 0 6px; }
 
-.c-id      { font-size: 11px; color: #2e3448; font-weight: 700; }
-.c-name    { font-size: 13px; font-weight: 700; color: #d0d5e5; display: flex; align-items: center; gap: 6px; }
+.c-id      { font-size: 11px; color: #9ca3af; font-weight: 700; }
+.c-name    { font-size: 13px; font-weight: 700; color: #111827; display: flex; align-items: center; gap: 6px; }
 .c-pencil  { font-size: 11px; opacity: 0.6; }
-.c-who     { font-size: 11px; color: #606880; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-who     { font-size: 11px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-status  { font-size: 11px; font-weight: 700; white-space: nowrap; }
 .c-date    { font-size: 11px; font-weight: 600; }
 .c-pct     { font-size: 13px; font-weight: 900; }
-.c-comment { font-size: 10px; color: #4a5068; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.c-updated { font-size: 10px; color: #2e3448; text-align: right; white-space: nowrap; }
+.c-comment { font-size: 10px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-updated { font-size: 10px; color: #9ca3af; text-align: right; white-space: nowrap; }
 
-.d-hot  { color: #ff4444; }
-.d-warn { color: #f5a623; }
-.d-ok   { color: #3a4055; }
-.d-done { color: #4cca66; }
+.d-hot  { color: #dc2626; }
+.d-warn { color: #d97706; }
+.d-ok   { color: #6b7280; }
+.d-done { color: #16a34a; }
 
 .loader {
   position: absolute; inset: 0;
-  background: #0b0d12cc;
+  background: #ffffffcc;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: #3a4055; font-weight: 600;
+  font-size: 14px; color: #6b7280; font-weight: 600;
   letter-spacing: 0.5px;
   z-index: 10;
 }
 .spinner {
   display: inline-block; width: 16px; height: 16px;
-  border: 2px solid #1e2230; border-top-color: #4da3ff;
+  border: 2px solid #e5e7eb; border-top-color: #3b82f6;
   border-radius: 50%; animation: spin 0.8s linear infinite;
   margin-right: 8px; vertical-align: -3px;
 }
@@ -126,7 +127,7 @@ html, body {
 
 .empty-row {
   flex: 1; display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: #2e3448; font-weight: 600;
+  font-size: 12px; color: #9ca3af; font-weight: 600;
 }
 
 /* ── ТВ-режим: крупнее ── */
@@ -159,7 +160,7 @@ html, body {
     padding: 8px 6px;
     gap: 2px 8px;
     flex: 0 0 auto;
-    border-top: 1px solid #1e2230;
+    border-top: 1px solid #e5e7eb;
   }
   .row > .row-stripe { grid-area: stripe; width: 6px; }
   .row > .c-id { display: none; }
@@ -174,10 +175,10 @@ html, body {
   .c-pct { font-size: 16px; }
 }
 
-/* ── Модалка редактирования ── */
+/* ── Модалка ── */
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(17,24,39,0.5);
   display: none;
   align-items: center; justify-content: center;
   z-index: 100;
@@ -185,31 +186,32 @@ html, body {
 }
 .modal-backdrop.open { display: flex; }
 .modal {
-  background: #11141c;
-  border: 1px solid #1e2230;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 20px;
   width: 100%;
   max-width: 420px;
-  color: #d0d5e5;
+  color: #111827;
   font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 .modal h3 {
   font-size: 14px; font-weight: 700; margin-bottom: 16px;
-  color: #fff;
+  color: #111827;
 }
 .modal label {
-  display: block; font-size: 11px; color: #606880;
+  display: block; font-size: 11px; color: #6b7280;
   text-transform: uppercase; letter-spacing: 0.5px;
   margin: 12px 0 4px;
 }
 .modal input, .modal select, .modal textarea {
   width: 100%;
-  background: #0b0d12;
-  border: 1px solid #1e2230;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   padding: 8px 10px;
-  color: #fff;
+  color: #111827;
   font-size: 14px;
   font-family: inherit;
 }
@@ -227,13 +229,13 @@ html, body {
   cursor: pointer;
   font-family: inherit;
 }
-.btn-cancel { background: #1e2230; color: #909aae; }
-.btn-save   { background: #2d7eff; color: #fff; }
+.btn-cancel { background: #f3f4f6; color: #374151; }
+.btn-save   { background: #2563eb; color: #fff; }
 .btn-save:disabled { opacity: 0.5; cursor: wait; }
 
 .pct-row { display: flex; align-items: center; gap: 8px; }
 .pct-row input[type=range] { flex: 1; }
-.pct-val { font-size: 14px; font-weight: 700; color: #fff; min-width: 42px; text-align: right; }
+.pct-val { font-size: 14px; font-weight: 700; color: #111827; min-width: 42px; text-align: right; }
 </style>
 </head>
 <body>
@@ -283,32 +285,27 @@ html, body {
 </div>
 
 <script>
-/* ════════════════════════════════════════════════════════════════
-   КОНФИГ — заполни после создания смарт-процесса в Битриксе
-   (как — см. bitrix-setup.md)
-   ════════════════════════════════════════════════════════════════ */
 const CONFIG = {
   ENTITY_TYPE_ID: 1068,
 
   FIELDS: {
-    END:         'ufCrm20_1778699640',  // Срок
-    PROGRESS:    'ufCrm20_1778699785',  // Прогресс
-    COMMENT:     'ufCrm20_1778700051',  // Комментарий
-    TEAM:        'ufCrm20_1778700254',  // Команда проекта
-    RESPONSIBLE: 'ufCrm20_1778700584',  // Ответственный
+    END:         'ufCrm20_1778699640',
+    PROGRESS:    'ufCrm20_1778699785',
+    COMMENT:     'ufCrm20_1778700051',
+    TEAM:        'ufCrm20_1778700254',
+    RESPONSIBLE: 'ufCrm20_1778700584',
   },
 
   STAGES: [
-    { id: 'DT1068_26:NEW',         label: '🔥 Срочно',    stripe: 's-fire',  row: 'fire-row',  color: '#ff4444' },
-    { id: 'DT1068_26:PREPARATION', label: '⚙️ Готовимся', stripe: 's-prod',  row: 'prod-row',  color: '#f5a623' },
-    { id: 'DT1068_26:CLIENT',      label: '⭐ Скоро',     stripe: 's-new',   row: 'new-row',   color: '#4da3ff' },
-    { id: 'DT1068_26:SUCCESS',     label: '✅ Успех',     stripe: 's-done',  row: 'done-row',  color: '#4cca66', terminal: true },
-    { id: 'DT1068_26:FAIL',        label: '❌ Провал',     stripe: 's-done',  row: 'done-row',  color: '#909aae', terminal: true },
+    { id: 'DT1068_26:NEW',         label: '🔥 Срочно',    stripe: 's-fire',  row: 'fire-row',  color: '#dc2626' },
+    { id: 'DT1068_26:PREPARATION', label: '⚙️ Готовимся', stripe: 's-prod',  row: 'prod-row',  color: '#d97706' },
+    { id: 'DT1068_26:CLIENT',      label: '⭐ Скоро',     stripe: 's-new',   row: 'new-row',   color: '#2563eb' },
+    { id: 'DT1068_26:SUCCESS',     label: '✅ Успех',     stripe: 's-done',  row: 'done-row',  color: '#16a34a', terminal: true },
+    { id: 'DT1068_26:FAIL',        label: '❌ Провал',     stripe: 's-done',  row: 'done-row',  color: '#6b7280', terminal: true },
   ],
 
   REFRESH_MS: 60 * 1000,
 };
-/* ════════════════════════════════════════════════════════════════ */
 
 const STAGE_META = Object.fromEntries(CONFIG.STAGES.map(s => [s.id, s]));
 const STAGE_ORDER = CONFIG.STAGES.map(s => s.id);
@@ -323,7 +320,6 @@ let isTV = false;
 let lastItems = [];
 let itemsById = {};
 
-/* ── Bitrix API: режим webhook или BX24 ── */
 const WEBHOOK_URL = (() => {
   const p = new URL(location.href).searchParams.get('webhook');
   const raw = p || '';
@@ -395,7 +391,6 @@ async function fetchCurrentUser() {
   currentUserId = r.data ? String(r.data.ID) : null;
 }
 
-/* ── helpers ── */
 function userName(id) {
   if (!id) return '—';
   const u = users[String(id)];
@@ -421,7 +416,9 @@ function teamLabel(item) {
 }
 
 function canEdit(item) {
-  if (isTV || !currentUserId) return false;
+  if (isTV) return false;
+  if (USE_WEBHOOK) return true;
+  if (!currentUserId) return false;
   return teamIds(item).includes(currentUserId);
 }
 
@@ -462,9 +459,9 @@ function dateLabel(s, stageId) {
 
 function pctColor(pct, stageId) {
   const m = STAGE_META[stageId];
-  if (!m) return '#5a6070';
+  if (!m) return '#6b7280';
   if (isTerminal(stageId)) return m.color;
-  if (pct === 0) return '#3a4055';
+  if (pct === 0) return '#d1d5db';
   return m.color;
 }
 
@@ -483,7 +480,6 @@ function sortItems(items) {
   });
 }
 
-/* ── рендер ── */
 function renderItems(items) {
   const body = document.getElementById('tbl-body');
   itemsById = {};
@@ -496,7 +492,7 @@ function renderItems(items) {
 
   body.innerHTML = sorted.map(item => {
     itemsById[item.id] = item;
-    const meta    = STAGE_META[item.stageId] || { label: item.stageId, stripe: 's-new', row: 'new-row', color: '#5a6070' };
+    const meta    = STAGE_META[item.stageId] || { label: item.stageId, stripe: 's-new', row: 'new-row', color: '#6b7280' };
     const pct     = progress(item);
     const endRaw  = item[CONFIG.FIELDS.END];
     const dLabel  = dateLabel(endRaw, item.stageId);
@@ -526,7 +522,6 @@ function renderItems(items) {
   });
 }
 
-/* ── часы ── */
 function tick() {
   const n = new Date();
   const t = [n.getHours(), n.getMinutes(), n.getSeconds()].map(x => String(x).padStart(2,'0')).join(':');
@@ -534,7 +529,6 @@ function tick() {
   if (el) el.textContent = 'обновлено ' + t;
 }
 
-/* ── модалка ── */
 const modal = document.getElementById('modal-backdrop');
 const fPct      = document.getElementById('f-pct');
 const fPctVal   = document.getElementById('f-pct-val');
@@ -599,7 +593,6 @@ btnSave.addEventListener('click', async () => {
   }
 });
 
-/* ── главный цикл ── */
 async function load() {
   try {
     const items = await fetchAllItems();
@@ -616,7 +609,6 @@ async function load() {
   }
 }
 
-/* ── старт ── */
 function detectMode() {
   const url = new URL(location.href);
   const m = url.searchParams.get('mode');
@@ -625,13 +617,11 @@ function detectMode() {
   return window.innerWidth >= 1280;
 }
 
-function configReady() {
-  return CONFIG.ENTITY_TYPE_ID > 0;
-}
+function configReady() { return CONFIG.ENTITY_TYPE_ID > 0; }
 
 function showSetupHint() {
   document.getElementById('tbl-body').innerHTML =
-    '<div class="empty-row">Не заполнен CONFIG в dashboard.html — см. bitrix-setup.md</div>';
+    '<div class="empty-row">Не заполнен CONFIG в dashboard.html</div>';
 }
 
 async function start() {
@@ -639,7 +629,7 @@ async function start() {
   isTV = detectMode();
   if (isTV) document.getElementById('tv-root').classList.add('tv-mode');
   if (USE_WEBHOOK) showWebhookBanner();
-  try { await fetchCurrentUser(); } catch (e) { /* TV-аккаунт всё равно работает */ }
+  try { await fetchCurrentUser(); } catch (e) { /* */ }
   tick();
   setInterval(tick, 1000);
   await load();
@@ -648,7 +638,7 @@ async function start() {
 
 function showWebhookBanner() {
   const b = document.createElement('div');
-  b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#8a5500;color:#fff;font-size:11px;padding:4px 10px;text-align:center;z-index:200;font-family:-apple-system,sans-serif;';
+  b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#fef3c7;color:#92400e;font-size:11px;padding:4px 10px;text-align:center;z-index:200;font-family:-apple-system,sans-serif;border-bottom:1px solid #fcd34d;';
   b.textContent = '⚠ Демо-режим: webhook. Для прода — открой через локальное приложение в Битриксе.';
   document.body.appendChild(b);
 }
@@ -658,7 +648,7 @@ function showNotInBitrix() {
     '<div class="empty-row" style="text-align:center;line-height:1.7;padding:20px;max-width:600px;margin:auto;">' +
     'Эту страницу нужно открывать <b>внутри Битрикс24</b> как локальное приложение.<br><br>' +
     'Для быстрой проверки добавь к URL параметр:<br>' +
-    '<code style="color:#f5a623;font-size:11px;">?webhook=https://amiled.bitrix24.ru/rest/46/КЛЮЧ/</code>' +
+    '<code style="color:#d97706;font-size:11px;">?webhook=https://amiled.bitrix24.ru/rest/46/КЛЮЧ/</code>' +
     '</div>';
 }
 
